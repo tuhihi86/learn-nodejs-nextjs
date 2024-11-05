@@ -3,8 +3,59 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import User from '../models/User';
 
-export const registerUser  =  async (req: any, res: any)  => {
-  const { name, email, password } = req.body ;
+/**
+ * @swagger
+ * tags:
+ *   name: Users
+ *   description: API quản lý người dùng
+ */
+
+/**
+ * @swagger
+ * path:
+ *   /api/auth/register:
+ *     post:
+ *       summary: Đăng ký người dùng mới
+ *       tags: [Users]
+ *       requestBody:
+ *         required: true
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               required:
+ *                 - name
+ *                 - email
+ *                 - password
+ *               properties:
+ *                 name:
+ *                   type: string
+ *                   example: "John Doe"
+ *                 email:
+ *                   type: string
+ *                   example: "johndoe@example.com"
+ *                 password:
+ *                   type: string
+ *                   example: "password123"
+ *       responses:
+ *         201:
+ *           description: Người dùng đã được đăng ký thành công
+ *           content:
+ *             application/json:
+ *               schema:
+ *                 type: object
+ *                 properties:
+ *                   msg:
+ *                     type: string
+ *                     example: "User registered successfully"
+ *         400:
+ *           description: Email đã tồn tại
+ *         500:
+ *           description: Lỗi máy chủ
+ */
+
+export const registerUser = async (req: Request, res: Response): Promise<any> => {
+  const { name, email, password } = req.body;
 
   try {
     let user = await User.findOne({ email });
@@ -22,14 +73,54 @@ export const registerUser  =  async (req: any, res: any)  => {
 
     await user.save();
 
-    res.status(201).json({ msg: 'User registered successfully' });
+    return res.status(201).json({ msg: 'User registered successfully' });
   } catch (err) {
     console.error(err);
-    res.status(500).send('Server error');
+    return res.status(500).send('Server error');
   }
 };
 
-export const loginUser = async (req: any, res: any) => {
+/**
+ * @swagger
+ * path:
+ *   /api/auth/login:
+ *     post:
+ *       summary: Đăng nhập người dùng
+ *       tags: [Users]
+ *       requestBody:
+ *         required: true
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               required:
+ *                 - email
+ *                 - password
+ *               properties:
+ *                 email:
+ *                   type: string
+ *                   example: "johndoe@example.com"
+ *                 password:
+ *                   type: string
+ *                   example: "password123"
+ *       responses:
+ *         200:
+ *           description: Đăng nhập thành công và trả về token
+ *           content:
+ *             application/json:
+ *               schema:
+ *                 type: object
+ *                 properties:
+ *                   token:
+ *                     type: string
+ *                     example: "your.jwt.token"
+ *         400:
+ *           description: Thông tin đăng nhập không hợp lệ
+ *         500:
+ *           description: Lỗi máy chủ
+ */
+
+export const loginUser = async (req: Request, res: Response): Promise<any> => {
   const { email, password } = req.body;
 
   try {
@@ -54,7 +145,39 @@ export const loginUser = async (req: any, res: any) => {
   }
 };
 
-export const getUserProfile = async (req: any, res: any) => {
+/**
+ * @swagger
+ * path:
+ *   /api/auth/profile:
+ *     get:
+ *       summary: Lấy thông tin hồ sơ người dùng
+ *       tags: [Users]
+ *       security:
+ *         - bearerAuth: []
+ *       responses:
+ *         200:
+ *           description: Trả về thông tin người dùng
+ *           content:
+ *             application/json:
+ *               schema:
+ *                 type: object
+ *                 properties:
+ *                   _id:
+ *                     type: string
+ *                     example: "603d214f1c4f1f001f6f3f2a"
+ *                   name:
+ *                     type: string
+ *                     example: "John Doe"
+ *                   email:
+ *                     type: string
+ *                     example: "johndoe@example.com"
+ *         404:
+ *           description: Người dùng không tìm thấy
+ *         500:
+ *           description: Lỗi máy chủ
+ */
+
+export const getUserProfile = async (req: Request, res: Response): Promise<any> => {
   try {
     const user = await User.findById(req.userId).select('-password');
     if (!user) {

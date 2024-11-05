@@ -11,11 +11,12 @@ declare module 'express-serve-static-core' {
   }
 }
 
-export const authMiddleware = (req: any, res: any, next: any) => {
+export const authMiddleware = (req: Request, res: Response, next: NextFunction): void => {
   const token = req.header('Authorization')?.split(' ')[1];
 
   if (!token) {
-    return res.status(401).json({ msg: 'No token, authorization denied' });
+    res.status(401).json({ msg: 'No token, authorization denied' });
+    return;
   }
 
   try {

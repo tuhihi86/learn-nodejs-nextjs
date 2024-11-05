@@ -1,0 +1,239 @@
+openapi: 3.0.0
+info:
+  title: Tất cả API
+  version: 1.0.0
+  description: API quản lý nhiều thứ
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+paths:
+  /api/users/register:
+    post:
+      summary: Đăng ký người dùng mới
+      tags:
+        - Users
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: "John Doe"
+                email:
+                  type: string
+                  example: "johndoe@example.com"
+                password:
+                  type: string
+                  example: "password123"
+      responses:
+        '201':
+          description: Người dùng đã được đăng ký thành công
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: "User registered successfully"
+        '400':
+          description: Email đã tồn tại
+        '500':
+          description: Lỗi máy chủ
+
+  /api/users/login:
+    post:
+      summary: Đăng nhập người dùng
+      tags:
+        - Users
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: "johndoe@example.com"
+                password:
+                  type: string
+                  example: "password123"
+      responses:
+        '200':
+          description: Đăng nhập thành công và trả về token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    example: "your.jwt.token"
+        '400':
+          description: Thông tin đăng nhập không hợp lệ
+        '500':
+          description: Lỗi máy chủ
+
+  /api/users/profile:
+    get:
+      summary: Lấy thông tin hồ sơ người dùng
+      tags:
+        - Users
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Trả về thông tin người dùng
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  _id:
+                    type: string
+                    example: "603d214f1c4f1f001f6f3f2a"
+                  name:
+                    type: string
+                    example: "John Doe"
+                  email:
+                    type: string
+                    example: "johndoe@example.com"
+        '404':
+          description: Người dùng không tìm thấy
+        '500':
+          description: Lỗi máy chủ
+
+  /api/products/create:
+    post:
+      summary: Tạo sản phẩm mới
+      tags:
+        - Products
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: "Product Name"
+                description:
+                  type: string
+                  example: "Product Description"
+                price:
+                  type: number
+                  example: 19.99
+                category:
+                  type: string
+                  example: "Electronics"
+                brand:
+                  type: string
+                  example: "Brand Name"
+                stock:
+                  type: integer
+                  example: 100
+                images:
+                  type: array
+                  items:
+                    type: string
+                  example: ["image1.jpg", "image2.jpg"]
+      responses:
+        '201':
+          description: Sản phẩm được tạo thành công
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: "Product created successfully"
+                  product:
+                    type: object
+                    properties:
+                      _id:
+                        type: string
+                        example: "603d214f1c4f1f001f6f3f2a"
+                      name:
+                        type: string
+                        example: "Product Name"
+                      description:
+                        type: string
+                        example: "Product Description"
+                      price:
+                        type: number
+                        example: 19.99
+                      category:
+                        type: string
+                        example: "Electronics"
+                      brand:
+                        type: string
+                        example: "Brand Name"
+                      stock:
+                        type: integer
+                        example: 100
+                      images:
+                        type: array
+                        items:
+                          type: string
+                        example: ["image1.jpg", "image2.jpg"]
+        '400':
+          description: Thiếu trường bắt buộc
+        '403':
+          description: Không có quyền tạo sản phẩm
+        '500':
+          description: Lỗi máy chủ
+
+  /api/products/getAll:
+    get:
+      summary: Lấy tất cả sản phẩm
+      tags:
+        - Products
+      responses:
+        '200':
+          description: Trả về danh sách tất cả sản phẩm
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    _id:
+                      type: string
+                      example: "603d214f1c4f1f001f6f3f2a"
+                    name:
+                      type: string
+                      example: "Product Name"
+                    description:
+                      type: string
+                      example: "Product Description"
+                    price:
+                      type: number
+                      example: 19.99
+                    category:
+                      type: string
+                      example: "Electronics"
+                    brand:
+                      type: string
+                      example: "Brand Name"
+                    stock:
+                      type: integer
+                      example: 100
+                    images:
+                      type: array
+                      items:
+                        type: string
+                      example: ["image1.jpg", "image2.jpg"]
+        '500':
+          description: Lỗi máy chủ
